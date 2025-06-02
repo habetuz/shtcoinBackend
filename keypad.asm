@@ -1,5 +1,5 @@
 init_keypad:
-	last	EQU	0x21
+	last	EQU	0x41
 	MOV	last,	#0FFH
 	RET
 
@@ -16,18 +16,19 @@ init_keypad:
 ; F0 | 1111 0000 -> #
 ;--------------------------------------------------------------------------
 read_keypad:
+	CALL	display_number
 	; Setup
-	MOV 	P1, 	#0FFH
-	mask	EQU	0x22
-	i	EQU	0x23
+	MOV 	P2, 	#0FFH
+	mask	EQU	0x42
+	i	EQU	0x43
 	MOV	i,	#4d
 	MOV	mask,	#11111110b
 	; Loop i times
 keypad_line_loop:
-	MOV	P1,	mask
+	MOV	P2,	mask
 
 	; Check wether a key in this line is pressed
-	MOV	A,	P1
+	MOV	A,	P2
 	ANL	A,	#0F0H
 	CJNE 	A, #0F0h, keypad_map_value ; Found a pressed key
 	
@@ -42,7 +43,7 @@ keypad_line_loop:
 	MOV	last,	#0FFH
 	JMP	read_keypad ; Read again
 keypad_map_value:
-	MOV	A,	P1
+	MOV	A,	P2
 	CALL	map_value ; A contains the mapped value now
 	CJNE 	A, last, keypad_return ; Read the same value as last time (no change)
 	JMP	read_keypad
@@ -86,3 +87,5 @@ map_table:
     	DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 00h,  0FFh, 0FFh, 0FFh, 08h,  0FFh, 05h,  02h,  0FFh   ; D0 -> DF
         DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 07h,  0FFh, 04h,  01h,  0FFh   ; E0 -> EF
         DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh   ; F0 -> FF
+
+ ;include 'display.asm'

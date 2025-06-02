@@ -1,6 +1,7 @@
 init_calculator:
-	display	EQU	0x28
+	display	EQU	0x48
 	MOV	display,0
+	RET
 
 ;--------------------------------------------------------------------------
 ; Reads numbers until an action key is pressed
@@ -9,7 +10,7 @@ init_calculator:
 ;	B: The action key terminating the input (see keypad)
 ;--------------------------------------------------------------------------
 read_number:
-	num	EQU	0x29
+	num	EQU	0x30
 	MOV	num,	0
 calculator_read_number_loop:
 	CALL	read_keypad
@@ -26,3 +27,4 @@ calculator_ret:
 	MOV	A,	num
 	MOV	B,	R0
 	RET
+

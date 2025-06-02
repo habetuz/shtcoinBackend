@@ -1,4 +1,3 @@
-ORG 0000H
 ;--------------------------------------
 ; Declarations 
 ;--------------------------------------
@@ -20,20 +19,6 @@ quotLo DATA 37h
 quotHi DATA 38h
 remLo DATA 33h
 remHi DATA 34h
-
-JMP init
-
-init:
-    CALL clear_display
-    MOV numberMemHi, #23h
-    MOV numberMemLo, #0A1h
-
-    JMP main_loop
-
-main_loop:
-    CALL display_number
-    CALL wait_loop
-    JMP main_loop
 
 ;--------------------------------------
 ; Display 

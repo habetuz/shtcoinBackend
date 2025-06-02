@@ -1,18 +1,19 @@
 call 	init_keypad
 call	init_calculator
+call	clear_display
 
-read:
-CALL	read_number
-MOV	0x00,	A
-MOV	0x01,	B
-JMP	read
+main_loop:
+	CALL	read_number
+
+	;CALL	calculate
+	;CALL	write_number
+
+	CALL	display_number
+	JMP	main_loop
 
 
 
-jmp ending
-; Imports
+
 include 'keypad.asm'
 include 'calculator.asm'
-ending:
-end
-
+include	'display.asm'
