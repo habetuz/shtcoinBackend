@@ -1,114 +1,107 @@
 calculator                                                                                                              PAGE 1
-                         1     init_calculator:
-  0048                   2             display EQU     0x48
-                         3             MOV     display,0
-                         4             RET
-                         5
+                         1     ;--------------------------------------------------------------------------
+                         2     ; Reads numbers until an action key is pressed
+                         3     ; Outputs:
+                         4     ;       A: The read number
+                         5     ;       B: The action key terminating the input (see keypad)
                          6     ;--------------------------------------------------------------------------
-                         7     ; Reads numbers until an action key is pressed
-                         8     ; Outputs:
-                         9     ;       A: The read number
-                        10     ;       B: The action key terminating the input (see keypad)
-                        11     ;--------------------------------------------------------------------------
-                        12     read_number:
-  0030                  13             num     EQU     0x30
-                        14             MOV     num,    0
-                        15     calculator_read_number_loop:
-                        16             CALL    read_keypad
+                         7     read_number:
+  0030                   8             num     EQU     0x30
+                         9             MOV     num,    #00h
+                        10     calculator_read_number_loop:
+                        11             CALL    read_keypad
 ****ERROR:Symbolnotdefined:read_keypad
-                        17             MOV     R0,     A
-                        18             ANL     A,      #0F0H
-                        19             JNZ     calculator_ret ; Actions are not 0 -> handle end of number reading
-                        20             MOV     A,      num
-                        21             MOV     B,      #10d
-                        22             MUL     AB
-                        23             ADD     A,      R0
-                        24             MOV     num,    A
-                        25             JMP     calculator_read_number_loop
-                        26     calculator_ret:
-                        27             MOV     A,      num
-                        28             MOV     B,      R0
-                        29             RET
-                        30
-                        31     ;--------------------------------------------------------------------------
-                        32     ; Calculates the new truth given a number and operation
-                        33     ; Inputs:
-                        34     ;       A: The number
-                        35     ;       B: The operation (see keypad)
-                        36     ; Side effect:
-                        37     ;       Outputs the calculation to the truth data
-                        38     ;--------------------------------------------------------------------------
-                        39     calculate:
-                        40             MOV     R0,     A
-                        41             MOV     A,      B
-                        42             SWAP    A
-                        43             CJNE    A, #1111b, check_plus
-                        44             JMP     op_equal
-                        45     check_plus:
-                        46             CJNE    A, #0001b, check_minus
-                        47             JMP     op_add
-                        48     check_minus:
-                        49             CJNE    A, #0010b, check_multiply
-                        50             JMP     op_minus
-                        51     check_multiply:
-                        52             CJNE    A, #0100b, op_divide
-                        53             JMP     op_multiply
-                        54
-                        55     op_equal:
-                        56             MOV     truth,  R0
+                        12             MOV     R0,     A
+                        13             ANL     A,      #0F0h
+                        14             JNZ     calculator_ret ; Actions are not 0 -> handle end of number reading
+                        15             MOV     A,      num
+                        16             MOV     B,      #10d
+                        17             MUL     AB
+                        18             ADD     A,      R0
+                        19             MOV     num,    A
+                        20             JMP     calculator_read_number_loop
+                        21     calculator_ret:
+                        22             MOV     A,      num
+                        23             MOV     B,      R0
+                        24             RET
+                        25
+                        26     ;--------------------------------------------------------------------------
+                        27     ; Calculates the new truth given a number and operation
+                        28     ; Inputs:
+                        29     ;       A: The number
+                        30     ;       B: The operation (see keypad)
+                        31     ; Side effect:
+                        32     ;       Outputs the calculation to the truth data
+                        33     ;--------------------------------------------------------------------------
+                        34     calculate:
+                        35             MOV     R0,     A
+                        36             MOV     A,      B
+                        37             SWAP    A
+                        38             CJNE    A, #1111b, check_plus
+                        39             JMP     op_equal
+                        40     check_plus:
+                        41             CJNE    A, #0001b, check_minus
+                        42             JMP     op_add
+                        43     check_minus:
+                        44             CJNE    A, #0010b, check_multiply
+                        45             JMP     op_minus
+                        46     check_multiply:
+                        47             CJNE    A, #0100b, op_divide
+                        48             JMP     op_multiply
+                        49
+                        50     op_equal:
+                        51             ; MOV   truth,  R0
+                        52             RET
+                        53
+                        54     op_add:
+                        55             MOV     A,      truth
 ****ERROR:Symbolnotdefined:truth
-                        57             RET
-                        58
-                        59     op_add:
-                        60             MOV     A,      truth
+                        56             ADD     A,      R0
+                        57             MOV     truth,  A
 ****ERROR:Symbolnotdefined:truth
-                        61             ADD     A,      R0
-                        62             MOV     A,      truth
+                        58             RET
+                        59
+                        60     op_minus:
+                        61             MOV     A,      truth
 ****ERROR:Symbolnotdefined:truth
-                        63             RET
-                        64
-                        65     op_minus:
-                        66             MOV     A,      truth
+                        62             SUBB    A,      R0
+                        63             MOV     truth,  A
 ****ERROR:Symbolnotdefined:truth
-                        67             SUBB    A,      R0
-                        68             MOV     A,      truth
+                        64             RET
+                        65
+                        66     op_multiply:
+                        67             MOV     A,      truth
 ****ERROR:Symbolnotdefined:truth
-                        69             RET
-                        70
-                        71     op_multiply:
-                        72             MOV     A,      truth
+                        68             MOV     B,      R0
+                        69             MUL     AB
+                        70             MOV     truth,  A
 ****ERROR:Symbolnotdefined:truth
-                        73             MOV     B,      R0
-                        74             MUL     AB
-                        75             MOV     A,      truth
+                        71             RET
+                        72
+                        73     op_divide:
+                        74             MOV     A,      truth
 ****ERROR:Symbolnotdefined:truth
-                        76             RET
-                        77
-                        78     op_divide:
-                        79             MOV     A,      truth
+                        75             MOV     B,      R0
+                        76             DIV     AB
+                        77             MOV     truth,  A
 ****ERROR:Symbolnotdefined:truth
-                        80             MOV     B,      R0
-                        81             DIV     AB
-                        82             MOV     A,      truth
-****ERROR:Symbolnotdefined:truth
-                        83             RET
-                        84
+                        78             RET
+                        79
 ****WARNING:Missing`END'directive
-ASSEMBLY COMPLETE, NO ERRORS FOUND, 11 WARNINGS
+ASSEMBLY COMPLETE, NO ERRORS FOUND, 10 WARNINGS
 
 
 ERROR SUMMARY:
-Line 16, ERROR:Symbolnotdefined:read_keypad
-Line 57, ERROR:Symbolnotdefined:truth
-Line 62, ERROR:Symbolnotdefined:truth
-Line 65, ERROR:Symbolnotdefined:truth
-Line 70, ERROR:Symbolnotdefined:truth
-Line 73, ERROR:Symbolnotdefined:truth
-Line 78, ERROR:Symbolnotdefined:truth
-Line 82, ERROR:Symbolnotdefined:truth
-Line 87, ERROR:Symbolnotdefined:truth
-Line 91, ERROR:Symbolnotdefined:truth
-Line 94, WARNING:Missing`END'directive
+Line 11, ERROR:Symbolnotdefined:read_keypad
+Line 56, ERROR:Symbolnotdefined:truth
+Line 59, ERROR:Symbolnotdefined:truth
+Line 64, ERROR:Symbolnotdefined:truth
+Line 67, ERROR:Symbolnotdefined:truth
+Line 72, ERROR:Symbolnotdefined:truth
+Line 76, ERROR:Symbolnotdefined:truth
+Line 81, ERROR:Symbolnotdefined:truth
+Line 85, ERROR:Symbolnotdefined:truth
+Line 88, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -127,9 +120,9 @@ B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H
 BDRCON . . . . . . . . . . . . . . .  D  ADDR  009BH  NOT USED
 BDRCON_1 . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 BRL. . . . . . . . . . . . . . . . .  D  ADDR  009AH  NOT USED
-CALCULATE. . . . . . . . . . . . . .  C  ADDR  001FH  NOT USED
-CALCULATOR_READ_NUMBER_LOOP. . . . .  C  ADDR  0007H
-CALCULATOR_RET . . . . . . . . . . .  C  ADDR  001AH
+CALCULATE. . . . . . . . . . . . . .  C  ADDR  001BH  NOT USED
+CALCULATOR_READ_NUMBER_LOOP. . . . .  C  ADDR  0003H
+CALCULATOR_RET . . . . . . . . . . .  C  ADDR  0016H
 CCAP0H . . . . . . . . . . . . . . .  D  ADDR  00FAH  NOT USED
 CCAP0L . . . . . . . . . . . . . . .  D  ADDR  00EAH  NOT USED
 CCAP1H . . . . . . . . . . . . . . .  D  ADDR  00FBH  NOT USED
@@ -156,9 +149,9 @@ CCF4 . . . . . . . . . . . . . . . .  B  ADDR  00DCH  NOT USED
 CCON . . . . . . . . . . . . . . . .  D  ADDR  00D8H  NOT USED
 CFINT. . . . . . . . . . . . . . . .  C  ADDR  0033H  NOT USED
 CH . . . . . . . . . . . . . . . . .  D  ADDR  00F9H  NOT USED
-CHECK_MINUS. . . . . . . . . . . . .  C  ADDR  002FH
-CHECK_MULTIPLY . . . . . . . . . . .  C  ADDR  0035H
-CHECK_PLUS . . . . . . . . . . . . .  C  ADDR  0029H
+CHECK_MINUS. . . . . . . . . . . . .  C  ADDR  002BH
+CHECK_MULTIPLY . . . . . . . . . . .  C  ADDR  0031H
+CHECK_PLUS . . . . . . . . . . . . .  C  ADDR  0025H
 CKCON. . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
 CKCON0 . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
 CKRL . . . . . . . . . . . . . . . .  D  ADDR  0097H  NOT USED
@@ -170,7 +163,6 @@ CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
-DISPLAY. . . . . . . . . . . . . . .  N  NUMB  0048H
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -195,7 +187,6 @@ FE . . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
 IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H  NOT USED
 IE0. . . . . . . . . . . . . . . . .  B  ADDR  0089H  NOT USED
 IE1. . . . . . . . . . . . . . . . .  B  ADDR  008BH  NOT USED
-INIT_CALCULATOR. . . . . . . . . . .  C  ADDR  0000H  NOT USED
 INT0 . . . . . . . . . . . . . . . .  B  ADDR  00B2H  NOT USED
 INT1 . . . . . . . . . . . . . . . .  B  ADDR  00B3H  NOT USED
 IP . . . . . . . . . . . . . . . . .  D  ADDR  00B8H  NOT USED
@@ -210,11 +201,11 @@ KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 NUM. . . . . . . . . . . . . . . . .  N  NUMB  0030H
-OP_ADD . . . . . . . . . . . . . . .  C  ADDR  003EH
-OP_DIVIDE. . . . . . . . . . . . . .  C  ADDR  0052H
-OP_EQUAL . . . . . . . . . . . . . .  C  ADDR  003BH
-OP_MINUS . . . . . . . . . . . . . .  C  ADDR  0044H
-OP_MULTIPLY. . . . . . . . . . . . .  C  ADDR  004AH
+OP_ADD . . . . . . . . . . . . . . .  C  ADDR  0038H
+OP_DIVIDE. . . . . . . . . . . . . .  C  ADDR  004CH
+OP_EQUAL . . . . . . . . . . . . . .  C  ADDR  0037H
+OP_MINUS . . . . . . . . . . . . . .  C  ADDR  003EH
+OP_MULTIPLY. . . . . . . . . . . . .  C  ADDR  0044H
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
@@ -251,7 +242,7 @@ RCAP2H . . . . . . . . . . . . . . .  D  ADDR  00CBH  NOT USED
 RCAP2L . . . . . . . . . . . . . . .  D  ADDR  00CAH  NOT USED
 RCLK . . . . . . . . . . . . . . . .  B  ADDR  00CDH  NOT USED
 RD . . . . . . . . . . . . . . . . .  B  ADDR  00B7H  NOT USED
-READ_NUMBER. . . . . . . . . . . . .  C  ADDR  0004H  NOT USED
+READ_NUMBER. . . . . . . . . . . . .  C  ADDR  0000H  NOT USED
 REN. . . . . . . . . . . . . . . . .  B  ADDR  009CH  NOT USED
 RESET. . . . . . . . . . . . . . . .  C  ADDR  0000H  NOT USED
 RI . . . . . . . . . . . . . . . . .  B  ADDR  0098H  NOT USED

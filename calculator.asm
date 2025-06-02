@@ -48,7 +48,7 @@ check_multiply:
 	JMP	op_multiply
 
 op_equal:
-	MOV	truth,	R0
+	; MOV	truth,	R0
 	RET
 
 op_add:
