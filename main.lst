@@ -1,25 +1,25 @@
 main                                                                                                                    PAGE 1
-0149 120011              1     call    init_keypad
-0003 12014A              2     call    init_calculator
-0006 120168              3     call    clear_display
-                         4
-                         5     main_loop:
-0009 12014E              6             CALL    read_number
-                         7
-                         8             ;CALL   calculate
-                         9             ;CALL   write_number
-                        10
-000C 12016F             11             CALL    display_number
-000F 80F8               12             JMP     main_loop
+014C 120014              1     call    init_keypad
+0003 1201A2              2     call    clear_display
+                         3
+  0050                   4     truth   DATA    50h
+0006 75B000              5     MOV     P3,     #00h
+                         6
+                         7     main_loop:
+0009 12014D              8             CALL    read_number
+                         9
+000C 120167             10             CALL    calculate
+                        11
+000F 8550B0             12             MOV     P3,     truth
                         13
-                        14
+0012 80F5               14             JMP     main_loop
                         15
                         16
                  =1     17     include 'keypad.asm'
                  =1     18     init_keypad:
   0041           =1     19             last    EQU     0x41
-0011 7541FF      =1     20             MOV     last,   #0FFH
-0014 22          =1     21             RET
+0014 7541FF      =1     20             MOV     last,   #0FFH
+0017 22          =1     21             RET
                  =1     22
                  =1     23     ;--------------------------------------------------------------------------
                  =1     24     ; Reads the keypad until a button is pressed
@@ -34,40 +34,40 @@ main                                                                            
                  =1     33     ; F0 | 1111 0000 -> #
                  =1     34     ;--------------------------------------------------------------------------
                  =1     35     read_keypad:
-0015 12016F      =1     36             CALL    display_number
+0018 1201A9      =1     36             CALL    display_number
                  =1     37             ; Setup
-0018 75A0FF      =1     38             MOV     P2,     #0FFH
+001B 75A0FF      =1     38             MOV     P2,     #0FFH
   0042           =1     39             mask    EQU     0x42
   0043           =1     40             i       EQU     0x43
-001B 754304      =1     41             MOV     i,      #4d
-001E 7542FE      =1     42             MOV     mask,   #11111110b
+001E 754304      =1     41             MOV     i,      #4d
+0021 7542FE      =1     42             MOV     mask,   #11111110b
                  =1     43             ; Loop i times
                  =1     44     keypad_line_loop:
-0021 8542A0      =1     45             MOV     P2,     mask
+0024 8542A0      =1     45             MOV     P2,     mask
                  =1     46
                  =1     47             ; Check wether a key in this line is pressed
-0024 E5A0        =1     48             MOV     A,      P2
-0026 54F0        =1     49             ANL     A,      #0F0H
-0028 B4F00D      =1     50             CJNE    A, #0F0h, keypad_map_value ; Found a pressed key
+0027 E5A0        =1     48             MOV     A,      P2
+0029 54F0        =1     49             ANL     A,      #0F0H
+002B B4F00D      =1     50             CJNE    A, #0F0h, keypad_map_value ; Found a pressed key
                  =1     51
                  =1     52             ; Shift mask one to the left (read next line)
-002B E542        =1     53             MOV     A,      mask
-002D 23          =1     54             RL      A
-002E F542        =1     55             MOV     mask,   A
+002E E542        =1     53             MOV     A,      mask
+0030 23          =1     54             RL      A
+0031 F542        =1     55             MOV     mask,   A
                  =1     56
                  =1     57             ; Decrement loop counter
-0030 D543EE      =1     58             DJNZ    i,      keypad_line_loop
+0033 D543EE      =1     58             DJNZ    i,      keypad_line_loop
                  =1     59             ; No key pressed in this iteration
-0033 7541FF      =1     60             MOV     last,   #0FFH
-0036 80DD        =1     61             JMP     read_keypad ; Read again
+0036 7541FF      =1     60             MOV     last,   #0FFH
+0039 80DD        =1     61             JMP     read_keypad ; Read again
                  =1     62     keypad_map_value:
-0038 E5A0        =1     63             MOV     A,      P2
-003A 120045      =1     64             CALL    map_value ; A contains the mapped value now
-003D B54102      =1     65             CJNE    A, last, keypad_return ; Read the same value as last time (no change)
-0040 80D3        =1     66             JMP     read_keypad
+003B E5A0        =1     63             MOV     A,      P2
+003D 120048      =1     64             CALL    map_value ; A contains the mapped value now
+0040 B54102      =1     65             CJNE    A, last, keypad_return ; Read the same value as last time (no change)
+0043 80D3        =1     66             JMP     read_keypad
                  =1     67     keypad_return:
-0042 F541        =1     68             MOV     last,   A
-0044 22          =1     69             RET ; A is a new value, return
+0045 F541        =1     68             MOV     last,   A
+0047 22          =1     69             RET ; A is a new value, return
                  =1     70
                  =1     71     ;--------------------------------------------------------------------------
                  =1     72     ; Maps value of A to another value listed in "map_table"
@@ -77,10 +77,10 @@ main                                                                            
                  =1     76     ;       A: The mapped value
                  =1     77     ;--------------------------------------------------------------------------
                  =1     78     map_value:
-0045 90004A      =1     79             MOV     DPTR,   #map_table      ; point DPTR at start of table
+0048 90004D      =1     79             MOV     DPTR,   #map_table      ; point DPTR at start of table
                  =1     80             ; A already contains your input byte
-0048 93          =1     81             MOVC    A,      @A+DPTR        ; A := map_table[A]
-0049 22          =1     82             RET
+004B 93          =1     81             MOVC    A,      @A+DPTR        ; A := map_table[A]
+004C 22          =1     82             RET
                  =1     83
                  =1     84
                  =1     85     ;--------------------------------------------------------------------------
@@ -89,293 +89,341 @@ main                                                                            
                  =1     88     ; value = mapped output
                  =1     89     ;--------------------------------------------------------------------------
                  =1     90     map_table:
-004A FFFFFFFFFF  =1     91             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+004D FFFFFFFFFF  =1     91             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-005A FFFFFFFFFF  =1     92             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+005D FFFFFFFFFF  =1     92             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-006A FFFFFFFFFF  =1     93             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+006D FFFFFFFFFF  =1     93             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-007A FFFFFFFFFF  =1     94             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+007D FFFFFFFFFF  =1     94             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-008A FFFFFFFFFF  =1     95             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+008D FFFFFFFFFF  =1     95             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-009A FFFFFFFFFF  =1     96             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+009D FFFFFFFFFF  =1     96             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-00AA FFFFFFFFFF  =1     97             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+00AD FFFFFFFFFF  =1     97             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-00BA FFFFFFFFFF  =1     98             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 80h,  0FFh, 0FFh, 0FFh, 40h,  0FFh, 20h,  10h,
+00BD FFFFFFFFFF  =1     98             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 80h,  0FFh, 0FFh, 0FFh, 40h,  0FFh, 20h,  10h,
      FFFF80FFFF
      FF40FF2010
      FF
-00CA FFFFFFFFFF  =1     99             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+00CD FFFFFFFFFF  =1     99             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-00DA FFFFFFFFFF  =1    100             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+00DD FFFFFFFFFF  =1    100             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-00EA FFFFFFFFFF  =1    101             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+00ED FFFFFFFFFF  =1    101             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-00FA FFFFFFFFFF  =1    102             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0F0h, 0FFh, 0FFh, 0FFh, 09h,  0FFh, 06h,  03h,
+00FD FFFFFFFFFF  =1    102             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0F0h, 0FFh, 0FFh, 0FFh, 09h,  0FFh, 06h,  03h,
      FFFFF0FFFF
      FF09FF0603
      FF
-010A FFFFFFFFFF  =1    103             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+010D FFFFFFFFFF  =1    103             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
-011A FFFFFFFFFF  =1    104             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 00h,  0FFh, 0FFh, 0FFh, 08h,  0FFh, 05h,  02h,
+011D FFFFFFFFFF  =1    104             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 00h,  0FFh, 0FFh, 0FFh, 08h,  0FFh, 05h,  02h,
      FFFF00FFFF
      FF08FF0502
      FF
-012A FFFFFFFFFF  =1    105             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 07h,  0FFh, 04h,  01h,
+012D FFFFFFFFFF  =1    105             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 07h,  0FFh, 04h,  01h,
      FFFFFFFFFF
      FF07FF0401
      FF
-013A FFFFFFFFFF  =1    106             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
+013D FFFFFFFFFF  =1    106             DB 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh, 0FFh,
      FFFFFFFFFF
      FFFFFFFFFF
      FF
                  =1    107
                  =1    108      ;include 'display.asm'
                  =1    109     include 'calculator.asm'
-                 =1    110     init_calculator:
-  0048           =1    111             display EQU     0x48
-014A 850048      =1    112             MOV     display,0
-014D 22          =1    113             RET
-                 =1    114
+                 =1    110     ;--------------------------------------------------------------------------
+                 =1    111     ; Reads numbers until an action key is pressed
+                 =1    112     ; Outputs:
+                 =1    113     ;       A: The read number
+                 =1    114     ;       B: The action key terminating the input (see keypad)
                  =1    115     ;--------------------------------------------------------------------------
-                 =1    116     ; Reads numbers until an action key is pressed
-                 =1    117     ; Outputs:
-                 =1    118     ;       A: The read number
-                 =1    119     ;       B: The action key terminating the input (see keypad)
-                 =1    120     ;--------------------------------------------------------------------------
-                 =1    121     read_number:
-  0030           =1    122             num     EQU     0x30
-014E 850030      =1    123             MOV     num,    0
-                 =1    124     calculator_read_number_loop:
-0151 1115        =1    125             CALL    read_keypad
-0153 F8          =1    126             MOV     R0,     A
-0154 54F0        =1    127             ANL     A,      #0F0H
-0156 700B        =1    128             JNZ     calculator_ret ; Actions are not 0 -> handle end of number reading
-0158 E530        =1    129             MOV     A,      num
-015A 75F00A      =1    130             MOV     B,      #10d
-015D A4          =1    131             MUL     AB
-015E 28          =1    132             ADD     A,      R0
-015F F530        =1    133             MOV     num,    A
-0161 80EE        =1    134             JMP     calculator_read_number_loop
-                 =1    135     calculator_ret:
-0163 E530        =1    136             MOV     A,      num
-0165 88F0        =1    137             MOV     B,      R0
-0167 22          =1    138             RET
-                 =1    139
-                 =1    140
-                 =1    141     include 'display.asm'
-                 =1    142     ;--------------------------------------
-                 =1    143     ; Declarations
-                 =1    144     ;--------------------------------------
-                 =1    145     ; Interopt Declarations
-  0030           =1    146     numberMemLo DATA 30h
-  0031           =1    147     numberMemHi DATA 31h
-  0032           =1    148     displayMem DATA 32h
-                 =1    149
-                 =1    150     ; Port Declarations
-  0080           =1    151     segmentSelectPort EQU P0
-  0090           =1    152     segmentShowPort EQU P1
-                 =1    153
-                 =1    154     ; Declarations for Division
-  0033           =1    155     numberLo DATA 33h
-  0034           =1    156     numberHi DATA 34h
-  0035           =1    157     divLo DATA 35h
-  0036           =1    158     divHi DATA 36h
-  0037           =1    159     quotLo DATA 37h
-  0038           =1    160     quotHi DATA 38h
-  0033           =1    161     remLo DATA 33h
-  0034           =1    162     remHi DATA 34h
-                 =1    163
-                 =1    164     ;--------------------------------------
-                 =1    165     ; Display
-                 =1    166     ;--------------------------------------
-                 =1    167     clear_display:
-0168 759000      =1    168         MOV segmentShowPort, #00h
-016B 758000      =1    169         MOV segmentSelectPort, #00h
-016E 22          =1    170         RET
-                 =1    171
-                 =1    172     display_number:
-                 =1    173         ; DIV 1000
-016F 853134      =1    174         MOV numberHi, numberMemHi
-0172 853033      =1    175         MOV numberLo, numberMemLo
-0175 753603      =1    176         MOV divHi, #03h
-0178 7535E8      =1    177         MOV divLo, #0E8h
-017B 1201C9      =1    178         CALL div16x16
-                 =1    179
-017E E537        =1    180         MOV A, quotLo
-0180 2480        =1    181         ADD A, #80h
-0182 F532        =1    182         MOV displayMem, A
-0184 1201AB      =1    183         CALL display_digit
-                 =1    184
-                 =1    185         ; DIV 100
-0187 E533        =1    186         MOV A, remLo
-0189 75F064      =1    187         MOV B, #64h
-018C 84          =1    188         DIV AB
-018D 2440        =1    189         ADD A, #40h
-018F F532        =1    190         MOV displayMem, A
-0191 1201AB      =1    191         CALL display_digit
-                 =1    192
-                 =1    193         ; DIV 10
-0194 E5F0        =1    194         MOV A, B
-0196 75F00A      =1    195         MOV B, #0Ah
-0199 84          =1    196         DIV AB
-019A 2420        =1    197         ADD A, #20h
-019C F532        =1    198         MOV displayMem, A
-019E 1201AB      =1    199         CALL display_digit
-                 =1    200
-                 =1    201         ; REMAINING
-01A1 E5F0        =1    202         MOV A, B
-01A3 2410        =1    203         ADD A, #10h
-01A5 F532        =1    204         MOV displayMem, A
-01A7 1201AB      =1    205         CALL display_digit
-                 =1    206
-01AA 22          =1    207         RET
-                 =1    208
-                 =1    209     ; Reads displayMem where 000[3 bits pos][4 bits for digit] and sets P1 and P0 corresponding
-                 =1    210     ;   posBits: [3rd pos][2nd pos][1st pos][0th pos]
-                 =1    211     ;   digitBits: just binary counting up 0-9
-                 =1    212     display_digit:
-                 =1    213         ; get digit in dec
-01AB E532        =1    214         MOV A, displayMem
-01AD 540F        =1    215         ANL A, #0Fh ; A = 0-9
-                 =1    216
-                 =1    217         ; set P0(segments)
-01AF 9001BF      =1    218         MOV DPTR, #DEC_SEGMENT_MAP
-01B2 93          =1    219         MOVC A, @A+DPTR
-01B3 F580        =1    220         MOV segmentSelectPort, A
-                 =1    221
-                 =1    222         ; get pos and set P1(position)
-01B5 E532        =1    223         MOV A, displayMem
-01B7 C4          =1    224         SWAP A
-01B8 540F        =1    225         ANL A, #0Fh
-01BA F590        =1    226         MOV segmentShowPort, A
+                 =1    116     read_number:
+  0030           =1    117             num     EQU     0x30
+014D 753000      =1    118             MOV     num,    #00h
+                 =1    119     calculator_read_number_loop:
+0150 1118        =1    120             CALL    read_keypad
+0152 F8          =1    121             MOV     R0,     A
+0153 54F0        =1    122             ANL     A,      #0F0h
+0155 700B        =1    123             JNZ     calculator_ret ; Actions are not 0 -> handle end of number reading
+0157 E530        =1    124             MOV     A,      num
+0159 75F00A      =1    125             MOV     B,      #10d
+015C A4          =1    126             MUL     AB
+015D 28          =1    127             ADD     A,      R0
+015E F530        =1    128             MOV     num,    A
+0160 80EE        =1    129             JMP     calculator_read_number_loop
+                 =1    130     calculator_ret:
+0162 E530        =1    131             MOV     A,      num
+0164 88F0        =1    132             MOV     B,      R0
+0166 22          =1    133             RET
+                 =1    134
+                 =1    135     ;--------------------------------------------------------------------------
+                 =1    136     ; Calculates the new truth given a number and operation
+                 =1    137     ; Inputs:
+                 =1    138     ;       A: The number
+                 =1    139     ;       B: The operation (see keypad)
+                 =1    140     ; Side effect:
+                 =1    141     ;       Outputs the calculation to the truth data
+                 =1    142     ;--------------------------------------------------------------------------
+                 =1    143     calculate:
+0167 F8          =1    144             MOV     R0,     A
+0168 E5F0        =1    145             MOV     A,      B
+016A C4          =1    146             SWAP    A
+016B B40F03      =1    147             CJNE    A, #1111b, check_plus
+016E 020183      =1    148             JMP     op_equal
+                 =1    149     check_plus:
+0171 B40103      =1    150             CJNE    A, #0001b, check_minus
+0174 020186      =1    151             JMP     op_add
+                 =1    152     check_minus:
+0177 B40203      =1    153             CJNE    A, #0010b, check_multiply
+017A 02018C      =1    154             JMP     op_minus
+                 =1    155     check_multiply:
+017D B4041A      =1    156             CJNE    A, #0100b, op_divide
+0180 020192      =1    157             JMP     op_multiply
+                 =1    158
+                 =1    159     op_equal:
+0183 8850        =1    160             MOV     truth,  R0
+0185 22          =1    161             RET
+                 =1    162
+                 =1    163     op_add:
+0186 E550        =1    164             MOV     A,      truth
+0188 28          =1    165             ADD     A,      R0
+0189 E550        =1    166             MOV     A,      truth
+018B 22          =1    167             RET
+                 =1    168
+                 =1    169     op_minus:
+018C E550        =1    170             MOV     A,      truth
+018E 98          =1    171             SUBB    A,      R0
+018F E550        =1    172             MOV     A,      truth
+0191 22          =1    173             RET
+                 =1    174
+                 =1    175     op_multiply:
+0192 E550        =1    176             MOV     A,      truth
+0194 88F0        =1    177             MOV     B,      R0
+0196 A4          =1    178             MUL     AB
+0197 E550        =1    179             MOV     A,      truth
+0199 22          =1    180             RET
+                 =1    181
+                 =1    182     op_divide:
+019A E550        =1    183             MOV     A,      truth
+019C 88F0        =1    184             MOV     B,      R0
+019E 84          =1    185             DIV     AB
+019F E550        =1    186             MOV     A,      truth
+01A1 22          =1    187             RET
+                 =1    188
+                 =1    189     include 'display.asm'
+                 =1    190     ;--------------------------------------
+                 =1    191     ; Declarations
+                 =1    192     ;--------------------------------------
+                 =1    193     ; Interopt Declarations
+  0030           =1    194     numberMemLo DATA 30h
+  0031           =1    195     numberMemHi DATA 31h
+  0032           =1    196     displayMem DATA 32h
+                 =1    197
+                 =1    198     ; Port Declarations
+  0080           =1    199     segmentSelectPort EQU P0
+  0090           =1    200     segmentShowPort EQU P1
+                 =1    201
+                 =1    202     ; Declarations for Division
+  0033           =1    203     numberLo DATA 33h
+  0034           =1    204     numberHi DATA 34h
+  0035           =1    205     divLo DATA 35h
+  0036           =1    206     divHi DATA 36h
+  0037           =1    207     quotLo DATA 37h
+  0038           =1    208     quotHi DATA 38h
+  0033           =1    209     remLo DATA 33h
+  0034           =1    210     remHi DATA 34h
+                 =1    211
+                 =1    212     ;--------------------------------------
+                 =1    213     ; Display
+                 =1    214     ;--------------------------------------
+                 =1    215     clear_display:
+01A2 759000      =1    216         MOV segmentShowPort, #00h
+01A5 758000      =1    217         MOV segmentSelectPort, #00h
+01A8 22          =1    218         RET
+                 =1    219
+                 =1    220     display_number:
+                 =1    221         ; DIV 1000
+01A9 853134      =1    222         MOV numberHi, numberMemHi
+01AC 853033      =1    223         MOV numberLo, numberMemLo
+01AF 753603      =1    224         MOV divHi, #03h
+01B2 7535E8      =1    225         MOV divLo, #0E8h
+01B5 120203      =1    226         CALL div16x16
                  =1    227
-01BC 3168        =1    228         CALL clear_display
-01BE 22          =1    229         RET
-                 =1    230
-                 =1    231     ; Mapping Segmente auf P1
-                 =1    232     ; A -> 7.bit
-                 =1    233     ; B -> 6.bit
-                 =1    234     ; C -> 5.bit
-                 =1    235     ; D -> 4.bit
-                 =1    236     ; E -> 3.bit
-                 =1    237     ; F -> 2.bit
-                 =1    238     ; G -> 1.bit
-                 =1    239     ; P -> 0.bit
-                 =1    240     DEC_SEGMENT_MAP:
-01BF FC          =1    241         DB 0xFC ; 0 -> A B C D E F           = 11111100
-01C0 60          =1    242         DB 0x60 ; 1 ->   B C                 = 01100000
-01C1 DA          =1    243         DB 0xDA ; 2 -> A B   D E   G         = 11011010
-01C2 F2          =1    244         DB 0xF2 ; 3 -> A B C D     G         = 11110010
-01C3 66          =1    245         DB 0x66 ; 4 ->   B C     F G         = 01100110
-01C4 B6          =1    246         DB 0xB6 ; 5 -> A   C D   F G         = 10110110
-01C5 BE          =1    247         DB 0xBE ; 6 -> A   C D E F G         = 10111110
-01C6 E0          =1    248         DB 0xE0 ; 7 -> A B C                 = 11100000
-01C7 FE          =1    249         DB 0xFE ; 8 -> A B C D E F G         = 11111110
-01C8 F6          =1    250         DB 0xF6 ; 9 -> A B C D   F G         = 11110110
-                 =1    251
-                 =1    252
-                 =1    253
-                 =1    254     ;--------------------------------------
-                 =1    255     ; 16x16 Division
-                 =1    256     ;--------------------------------------
-                 =1    257     div16x16:
-                 =1    258        ; Rem equ DIV
-01C9 853333      =1    259        MOV remLo, numberLo
-01CC 853434      =1    260        MOV remHi, numberHi
-                 =1    261
-                 =1    262         ; Quot init 0
-01CF 753700      =1    263         MOV quotLo, #0
-01D2 753800      =1    264         MOV quotHi, #0
-                 =1    265
-01D5 1201D9      =1    266         CALL div_loop16x16
-01D8 22          =1    267         RET
-                 =1    268
-                 =1    269     div_loop16x16:
-                 =1    270         ; Prüfe ob Rest >= Divisor (16-Bit Vergleich)
-                 =1    271
-01D9 E534        =1    272         MOV A, remHi
-01DB C3          =1    273         CLR C
-01DC 9536        =1    274         SUBB A, divHi
-01DE 4027        =1    275         JC div_done       ; Rest High < Divisor High → Rest < Divisor
-                 =1    276
-01E0 6003        =1    277         JZ check_low      ; Wenn equal, prüfe Low-Bytes
+01B8 E537        =1    228         MOV A, quotLo
+01BA 2480        =1    229         ADD A, #80h
+01BC F532        =1    230         MOV displayMem, A
+01BE 1201E5      =1    231         CALL display_digit
+                 =1    232
+                 =1    233         ; DIV 100
+01C1 E533        =1    234         MOV A, remLo
+01C3 75F064      =1    235         MOV B, #64h
+01C6 84          =1    236         DIV AB
+01C7 2440        =1    237         ADD A, #40h
+01C9 F532        =1    238         MOV displayMem, A
+01CB 1201E5      =1    239         CALL display_digit
+                 =1    240
+                 =1    241         ; DIV 10
+01CE E5F0        =1    242         MOV A, B
+01D0 75F00A      =1    243         MOV B, #0Ah
+01D3 84          =1    244         DIV AB
+01D4 2420        =1    245         ADD A, #20h
+01D6 F532        =1    246         MOV displayMem, A
+01D8 1201E5      =1    247         CALL display_digit
+                 =1    248
+                 =1    249         ; REMAINING
+01DB E5F0        =1    250         MOV A, B
+01DD 2410        =1    251         ADD A, #10h
+01DF F532        =1    252         MOV displayMem, A
+01E1 1201E5      =1    253         CALL display_digit
+                 =1    254
+01E4 22          =1    255         RET
+                 =1    256
+                 =1    257     ; Reads displayMem where 000[3 bits pos][4 bits for digit] and sets P1 and P0 corresponding
+                 =1    258     ;   posBits: [3rd pos][2nd pos][1st pos][0th pos]
+                 =1    259     ;   digitBits: just binary counting up 0-9
+                 =1    260     display_digit:
+                 =1    261         ; get digit in dec
+01E5 E532        =1    262         MOV A, displayMem
+01E7 540F        =1    263         ANL A, #0Fh ; A = 0-9
+                 =1    264
+                 =1    265         ; set P0(segments)
+01E9 9001F9      =1    266         MOV DPTR, #DEC_SEGMENT_MAP
+01EC 93          =1    267         MOVC A, @A+DPTR
+01ED F580        =1    268         MOV segmentSelectPort, A
+                 =1    269
+                 =1    270         ; get pos and set P1(position)
+01EF E532        =1    271         MOV A, displayMem
+01F1 C4          =1    272         SWAP A
+01F2 540F        =1    273         ANL A, #0Fh
+01F4 F590        =1    274         MOV segmentShowPort, A
+                 =1    275
+01F6 31A2        =1    276         CALL clear_display
+01F8 22          =1    277         RET
                  =1    278
-                 =1    279         ; Rest High > Divisor High → subtrahieren möglich
-01E2 0201EC      =1    280         JMP do_subtract
-                 =1    281
-                 =1    282     check_low:
-01E5 E533        =1    283         MOV A, remLo
-01E7 C3          =1    284         CLR C
-01E8 9535        =1    285         SUBB A, divLo
-01EA 401B        =1    286         JC div_done       ; Rest Low < Divisor Low → Rest < Divisor
-                 =1    287
-                 =1    288         ; Rest >= Divisor → Subtraktion möglich
-                 =1    289
-                 =1    290     do_subtract:
-                 =1    291         ; Subtrahiere Divisor von Rest
-01EC E533        =1    292         MOV A, remLo
-01EE C3          =1    293         CLR C
-01EF 9535        =1    294         SUBB A, divLo
-01F1 F533        =1    295         MOV remLo, A
-                 =1    296
-01F3 E534        =1    297         MOV A, remHi
-01F5 9536        =1    298         SUBB A, divHi
-01F7 F534        =1    299         MOV remHi, A
+                 =1    279     ; Mapping Segmente auf P1
+                 =1    280     ; A -> 7.bit
+                 =1    281     ; B -> 6.bit
+                 =1    282     ; C -> 5.bit
+                 =1    283     ; D -> 4.bit
+                 =1    284     ; E -> 3.bit
+                 =1    285     ; F -> 2.bit
+                 =1    286     ; G -> 1.bit
+                 =1    287     ; P -> 0.bit
+                 =1    288     DEC_SEGMENT_MAP:
+01F9 FC          =1    289         DB 0xFC ; 0 -> A B C D E F           = 11111100
+01FA 60          =1    290         DB 0x60 ; 1 ->   B C                 = 01100000
+01FB DA          =1    291         DB 0xDA ; 2 -> A B   D E   G         = 11011010
+01FC F2          =1    292         DB 0xF2 ; 3 -> A B C D     G         = 11110010
+01FD 66          =1    293         DB 0x66 ; 4 ->   B C     F G         = 01100110
+01FE B6          =1    294         DB 0xB6 ; 5 -> A   C D   F G         = 10110110
+01FF BE          =1    295         DB 0xBE ; 6 -> A   C D E F G         = 10111110
+0200 E0          =1    296         DB 0xE0 ; 7 -> A B C                 = 11100000
+0201 FE          =1    297         DB 0xFE ; 8 -> A B C D E F G         = 11111110
+0202 F6          =1    298         DB 0xF6 ; 9 -> A B C D   F G         = 11110110
+                 =1    299
                  =1    300
-                 =1    301         ; Quotient erhöhen (16-Bit)
-01F9 E537        =1    302         MOV A, quotLo
-01FB 04          =1    303         INC A
-01FC F537        =1    304         MOV quotLo, A
-01FE 7005        =1    305         JNZ continue_loop
-                 =1    306         ; Überlauf in Low-Byte → High-Byte erhöhen
-0200 E538        =1    307         MOV A, quotHi
-0202 04          =1    308         INC A
-0203 F538        =1    309         MOV quotHi, A
-                 =1    310
-                 =1    311     continue_loop:
-0205 80D2        =1    312         JMP div_loop16x16
+                 =1    301
+                 =1    302     ;--------------------------------------
+                 =1    303     ; 16x16 Division
+                 =1    304     ;--------------------------------------
+                 =1    305     div16x16:
+                 =1    306        ; Rem equ DIV
+0203 853333      =1    307        MOV remLo, numberLo
+0206 853434      =1    308        MOV remHi, numberHi
+                 =1    309
+                 =1    310         ; Quot init 0
+0209 753700      =1    311         MOV quotLo, #0
+020C 753800      =1    312         MOV quotHi, #0
                  =1    313
-                 =1    314     div_done:
-0207 22          =1    315         RET
+020F 120213      =1    314         CALL div_loop16x16
+0212 22          =1    315         RET
                  =1    316
-                 =1    317     ;--------------------------------------
-                 =1    318     ; Wait loop
-                 =1    319     ;--------------------------------------
-                 =1    320     wait_loop:
-0208 7A0A        =1    321         MOV R2, #10
-                 =1    322     wait_outer:
-020A 790A        =1    323         MOV R1, #10
-                 =1    324     wait_inner:
-020C D9FE        =1    325         DJNZ R1, wait_inner
-020E DAFA        =1    326         DJNZ R2, wait_outer
-0210 22          =1    327         RET
-                 =1    328
-                 =1    329     END
+                 =1    317     div_loop16x16:
+                 =1    318         ; Prüfe ob Rest >= Divisor (16-Bit Vergleich)
+                 =1    319
+0213 E534        =1    320         MOV A, remHi
+0215 C3          =1    321         CLR C
+0216 9536        =1    322         SUBB A, divHi
+0218 4027        =1    323         JC div_done       ; Rest High < Divisor High → Rest < Divisor
+                 =1    324
+021A 6003        =1    325         JZ check_low      ; Wenn equal, prüfe Low-Bytes
+                 =1    326
+                 =1    327         ; Rest High > Divisor High → subtrahieren möglich
+021C 020226      =1    328         JMP do_subtract
+                 =1    329
+                 =1    330     check_low:
+021F E533        =1    331         MOV A, remLo
+0221 C3          =1    332         CLR C
+0222 9535        =1    333         SUBB A, divLo
+0224 401B        =1    334         JC div_done       ; Rest Low < Divisor Low → Rest < Divisor
+                 =1    335
+                 =1    336         ; Rest >= Divisor → Subtraktion möglich
+                 =1    337
+                 =1    338     do_subtract:
+                 =1    339         ; Subtrahiere Divisor von Rest
+0226 E533        =1    340         MOV A, remLo
+0228 C3          =1    341         CLR C
+0229 9535        =1    342         SUBB A, divLo
+022B F533        =1    343         MOV remLo, A
+                 =1    344
+022D E534        =1    345         MOV A, remHi
+022F 9536        =1    346         SUBB A, divHi
+0231 F534        =1    347         MOV remHi, A
+                 =1    348
+                 =1    349         ; Quotient erhöhen (16-Bit)
+0233 E537        =1    350         MOV A, quotLo
+0235 04          =1    351         INC A
+0236 F537        =1    352         MOV quotLo, A
+0238 7005        =1    353         JNZ continue_loop
+                 =1    354         ; Überlauf in Low-Byte → High-Byte erhöhen
+023A E538        =1    355         MOV A, quotHi
+023C 04          =1    356         INC A
+023D F538        =1    357         MOV quotHi, A
+                 =1    358
+                 =1    359     continue_loop:
+023F 80D2        =1    360         JMP div_loop16x16
+                 =1    361
+                 =1    362     div_done:
+0241 22          =1    363         RET
+                 =1    364
+                 =1    365     ;--------------------------------------
+                 =1    366     ; Wait loop
+                 =1    367     ;--------------------------------------
+                 =1    368     wait_loop:
+0242 7A0A        =1    369         MOV R2, #10
+                 =1    370     wait_outer:
+0244 790A        =1    371         MOV R1, #10
+                 =1    372     wait_inner:
+0246 D9FE        =1    373         DJNZ R1, wait_inner
+0248 DAFA        =1    374         DJNZ R2, wait_outer
+024A 22          =1    375         RET
+                 =1    376
+                 =1    377     END
 ASSEMBLY COMPLETE, NO ERRORS FOUND, NO WARNINGS
 
 
@@ -396,8 +444,9 @@ B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H
 BDRCON . . . . . . . . . . . . . . .  D  ADDR  009BH  NOT USED
 BDRCON_1 . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 BRL. . . . . . . . . . . . . . . . .  D  ADDR  009AH  NOT USED
-CALCULATOR_READ_NUMBER_LOOP. . . . .  C  ADDR  0151H
-CALCULATOR_RET . . . . . . . . . . .  C  ADDR  0163H
+CALCULATE. . . . . . . . . . . . . .  C  ADDR  0167H
+CALCULATOR_READ_NUMBER_LOOP. . . . .  C  ADDR  0150H
+CALCULATOR_RET . . . . . . . . . . .  C  ADDR  0162H
 CCAP0H . . . . . . . . . . . . . . .  D  ADDR  00FAH  NOT USED
 CCAP0L . . . . . . . . . . . . . . .  D  ADDR  00EAH  NOT USED
 CCAP1H . . . . . . . . . . . . . . .  D  ADDR  00FBH  NOT USED
@@ -424,31 +473,33 @@ CCF4 . . . . . . . . . . . . . . . .  B  ADDR  00DCH  NOT USED
 CCON . . . . . . . . . . . . . . . .  D  ADDR  00D8H  NOT USED
 CFINT. . . . . . . . . . . . . . . .  C  ADDR  0033H  NOT USED
 CH . . . . . . . . . . . . . . . . .  D  ADDR  00F9H  NOT USED
-CHECK_LOW. . . . . . . . . . . . . .  C  ADDR  01E5H
+CHECK_LOW. . . . . . . . . . . . . .  C  ADDR  021FH
+CHECK_MINUS. . . . . . . . . . . . .  C  ADDR  0177H
+CHECK_MULTIPLY . . . . . . . . . . .  C  ADDR  017DH
+CHECK_PLUS . . . . . . . . . . . . .  C  ADDR  0171H
 CKCON. . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
 CKCON0 . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
 CKRL . . . . . . . . . . . . . . . .  D  ADDR  0097H  NOT USED
 CKSEL. . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
 CL . . . . . . . . . . . . . . . . .  D  ADDR  00E9H  NOT USED
-CLEAR_DISPLAY. . . . . . . . . . . .  C  ADDR  0168H
+CLEAR_DISPLAY. . . . . . . . . . . .  C  ADDR  01A2H
 CLKREG . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
 CMOD . . . . . . . . . . . . . . . .  D  ADDR  00D9H  NOT USED
-CONTINUE_LOOP. . . . . . . . . . . .  C  ADDR  0205H
+CONTINUE_LOOP. . . . . . . . . . . .  C  ADDR  023FH
 CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
-DEC_SEGMENT_MAP. . . . . . . . . . .  C  ADDR  01BFH
-DISPLAY. . . . . . . . . . . . . . .  N  NUMB  0048H
+DEC_SEGMENT_MAP. . . . . . . . . . .  C  ADDR  01F9H
 DISPLAYMEM . . . . . . . . . . . . .  D  ADDR  0032H
-DISPLAY_DIGIT. . . . . . . . . . . .  C  ADDR  01ABH
-DISPLAY_NUMBER . . . . . . . . . . .  C  ADDR  016FH
-DIV16X16 . . . . . . . . . . . . . .  C  ADDR  01C9H
+DISPLAY_DIGIT. . . . . . . . . . . .  C  ADDR  01E5H
+DISPLAY_NUMBER . . . . . . . . . . .  C  ADDR  01A9H
+DIV16X16 . . . . . . . . . . . . . .  C  ADDR  0203H
 DIVHI. . . . . . . . . . . . . . . .  D  ADDR  0036H
 DIVLO. . . . . . . . . . . . . . . .  D  ADDR  0035H
-DIV_DONE . . . . . . . . . . . . . .  C  ADDR  0207H
-DIV_LOOP16X16. . . . . . . . . . . .  C  ADDR  01D9H
-DO_SUBTRACT. . . . . . . . . . . . .  C  ADDR  01ECH
+DIV_DONE . . . . . . . . . . . . . .  C  ADDR  0241H
+DIV_LOOP16X16. . . . . . . . . . . .  C  ADDR  0213H
+DO_SUBTRACT. . . . . . . . . . . . .  C  ADDR  0226H
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -474,8 +525,7 @@ I. . . . . . . . . . . . . . . . . .  N  NUMB  0043H
 IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H  NOT USED
 IE0. . . . . . . . . . . . . . . . .  B  ADDR  0089H  NOT USED
 IE1. . . . . . . . . . . . . . . . .  B  ADDR  008BH  NOT USED
-INIT_CALCULATOR. . . . . . . . . . .  C  ADDR  014AH
-INIT_KEYPAD. . . . . . . . . . . . .  C  ADDR  0011H
+INIT_KEYPAD. . . . . . . . . . . . .  C  ADDR  0014H
 INT0 . . . . . . . . . . . . . . . .  B  ADDR  00B2H  NOT USED
 INT1 . . . . . . . . . . . . . . . .  B  ADDR  00B3H  NOT USED
 IP . . . . . . . . . . . . . . . . .  D  ADDR  00B8H  NOT USED
@@ -489,19 +539,24 @@ IT1. . . . . . . . . . . . . . . . .  B  ADDR  008AH  NOT USED
 KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
-KEYPAD_LINE_LOOP . . . . . . . . . .  C  ADDR  0021H
-KEYPAD_MAP_VALUE . . . . . . . . . .  C  ADDR  0038H
-KEYPAD_RETURN. . . . . . . . . . . .  C  ADDR  0042H
+KEYPAD_LINE_LOOP . . . . . . . . . .  C  ADDR  0024H
+KEYPAD_MAP_VALUE . . . . . . . . . .  C  ADDR  003BH
+KEYPAD_RETURN. . . . . . . . . . . .  C  ADDR  0045H
 LAST . . . . . . . . . . . . . . . .  N  NUMB  0041H
 MAIN_LOOP. . . . . . . . . . . . . .  C  ADDR  0009H
-MAP_TABLE. . . . . . . . . . . . . .  C  ADDR  004AH
-MAP_VALUE. . . . . . . . . . . . . .  C  ADDR  0045H
+MAP_TABLE. . . . . . . . . . . . . .  C  ADDR  004DH
+MAP_VALUE. . . . . . . . . . . . . .  C  ADDR  0048H
 MASK . . . . . . . . . . . . . . . .  N  NUMB  0042H
 NUM. . . . . . . . . . . . . . . . .  N  NUMB  0030H
 NUMBERHI . . . . . . . . . . . . . .  D  ADDR  0034H
 NUMBERLO . . . . . . . . . . . . . .  D  ADDR  0033H
 NUMBERMEMHI. . . . . . . . . . . . .  D  ADDR  0031H
 NUMBERMEMLO. . . . . . . . . . . . .  D  ADDR  0030H
+OP_ADD . . . . . . . . . . . . . . .  C  ADDR  0186H
+OP_DIVIDE. . . . . . . . . . . . . .  C  ADDR  019AH
+OP_EQUAL . . . . . . . . . . . . . .  C  ADDR  0183H
+OP_MINUS . . . . . . . . . . . . . .  C  ADDR  018CH
+OP_MULTIPLY. . . . . . . . . . . . .  C  ADDR  0192H
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
@@ -510,7 +565,7 @@ P1 . . . . . . . . . . . . . . . . .  D  ADDR  0090H  NOT USED
 P1M1 . . . . . . . . . . . . . . . .  D  ADDR  00D4H  NOT USED
 P1M2 . . . . . . . . . . . . . . . .  D  ADDR  00E2H  NOT USED
 P2 . . . . . . . . . . . . . . . . .  D  ADDR  00A0H
-P3 . . . . . . . . . . . . . . . . .  D  ADDR  00B0H  NOT USED
+P3 . . . . . . . . . . . . . . . . .  D  ADDR  00B0H
 P3M1 . . . . . . . . . . . . . . . .  D  ADDR  00D5H  NOT USED
 P3M2 . . . . . . . . . . . . . . . .  D  ADDR  00E3H  NOT USED
 P4 . . . . . . . . . . . . . . . . .  D  ADDR  00C0H  NOT USED
@@ -540,8 +595,8 @@ RCAP2H . . . . . . . . . . . . . . .  D  ADDR  00CBH  NOT USED
 RCAP2L . . . . . . . . . . . . . . .  D  ADDR  00CAH  NOT USED
 RCLK . . . . . . . . . . . . . . . .  B  ADDR  00CDH  NOT USED
 RD . . . . . . . . . . . . . . . . .  B  ADDR  00B7H  NOT USED
-READ_KEYPAD. . . . . . . . . . . . .  C  ADDR  0015H
-READ_NUMBER. . . . . . . . . . . . .  C  ADDR  014EH
+READ_KEYPAD. . . . . . . . . . . . .  C  ADDR  0018H
+READ_NUMBER. . . . . . . . . . . . .  C  ADDR  014DH
 REMHI. . . . . . . . . . . . . . . .  D  ADDR  0034H
 REMLO. . . . . . . . . . . . . . . .  D  ADDR  0033H
 REN. . . . . . . . . . . . . . . . .  B  ADDR  009CH  NOT USED
@@ -595,10 +650,11 @@ TMOD . . . . . . . . . . . . . . . .  D  ADDR  0089H  NOT USED
 TR0. . . . . . . . . . . . . . . . .  B  ADDR  008CH  NOT USED
 TR1. . . . . . . . . . . . . . . . .  B  ADDR  008EH  NOT USED
 TR2. . . . . . . . . . . . . . . . .  B  ADDR  00CAH  NOT USED
+TRUTH. . . . . . . . . . . . . . . .  D  ADDR  0050H
 TXD. . . . . . . . . . . . . . . . .  B  ADDR  00B1H  NOT USED
-WAIT_INNER . . . . . . . . . . . . .  C  ADDR  020CH
-WAIT_LOOP. . . . . . . . . . . . . .  C  ADDR  0208H  NOT USED
-WAIT_OUTER . . . . . . . . . . . . .  C  ADDR  020AH
+WAIT_INNER . . . . . . . . . . . . .  C  ADDR  0246H
+WAIT_LOOP. . . . . . . . . . . . . .  C  ADDR  0242H  NOT USED
+WAIT_OUTER . . . . . . . . . . . . .  C  ADDR  0244H
 WDTCON . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTPRG . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTRST . . . . . . . . . . . . . . .  D  ADDR  00A6H  NOT USED
