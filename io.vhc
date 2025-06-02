@@ -1,0 +1,5 @@
+# MCU 8051 IDE: Virtual HW component configuration file
+# Project: Sys
+# Component: VHW File Interface
+
+PaleFileInterface {{0 0 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 - 9 - 10 - 11 - 12 - 13 - 14 - 15 -} {0 7 1 6 2 5 3 4 4 3 5 2 6 1 7 0 8 - 9 - 10 - 11 - 12 - 13 - 14 - 15 -} {} {} {} /home/marvin/dev/Sys/log.txt 1 0}
