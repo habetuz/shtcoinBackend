@@ -173,16 +173,5 @@ continue_loop:
 div_done:
     RET
 
-;--------------------------------------
-; Wait loop
-;--------------------------------------
-wait_loop:
-    MOV R2, #10
-wait_outer:
-    MOV R1, #10
-wait_inner:
-    DJNZ R1, wait_inner
-    DJNZ R2, wait_outer
-    RET
 
 END

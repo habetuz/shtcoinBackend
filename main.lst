@@ -212,27 +212,27 @@ main                                                                            
                  =1    163     op_add:
 0186 E550        =1    164             MOV     A,      truth
 0188 28          =1    165             ADD     A,      R0
-0189 E550        =1    166             MOV     A,      truth
+0189 F550        =1    166             MOV     truth,  A
 018B 22          =1    167             RET
                  =1    168
                  =1    169     op_minus:
 018C E550        =1    170             MOV     A,      truth
 018E 98          =1    171             SUBB    A,      R0
-018F E550        =1    172             MOV     A,      truth
+018F F550        =1    172             MOV     truth,  A
 0191 22          =1    173             RET
                  =1    174
                  =1    175     op_multiply:
 0192 E550        =1    176             MOV     A,      truth
 0194 88F0        =1    177             MOV     B,      R0
 0196 A4          =1    178             MUL     AB
-0197 E550        =1    179             MOV     A,      truth
+0197 F550        =1    179             MOV     truth,  A
 0199 22          =1    180             RET
                  =1    181
                  =1    182     op_divide:
 019A E550        =1    183             MOV     A,      truth
 019C 88F0        =1    184             MOV     B,      R0
 019E 84          =1    185             DIV     AB
-019F E550        =1    186             MOV     A,      truth
+019F F550        =1    186             MOV     truth,  A
 01A1 22          =1    187             RET
                  =1    188
                  =1    189     include 'display.asm'
@@ -411,19 +411,8 @@ main                                                                            
                  =1    362     div_done:
 0241 22          =1    363         RET
                  =1    364
-                 =1    365     ;--------------------------------------
-                 =1    366     ; Wait loop
-                 =1    367     ;--------------------------------------
-                 =1    368     wait_loop:
-0242 7A0A        =1    369         MOV R2, #10
-                 =1    370     wait_outer:
-0244 790A        =1    371         MOV R1, #10
-                 =1    372     wait_inner:
-0246 D9FE        =1    373         DJNZ R1, wait_inner
-0248 DAFA        =1    374         DJNZ R2, wait_outer
-024A 22          =1    375         RET
-                 =1    376
-                 =1    377     END
+                 =1    365
+                 =1    366     END
 ASSEMBLY COMPLETE, NO ERRORS FOUND, NO WARNINGS
 
 
@@ -652,9 +641,6 @@ TR1. . . . . . . . . . . . . . . . .  B  ADDR  008EH  NOT USED
 TR2. . . . . . . . . . . . . . . . .  B  ADDR  00CAH  NOT USED
 TRUTH. . . . . . . . . . . . . . . .  D  ADDR  0050H
 TXD. . . . . . . . . . . . . . . . .  B  ADDR  00B1H  NOT USED
-WAIT_INNER . . . . . . . . . . . . .  C  ADDR  0246H
-WAIT_LOOP. . . . . . . . . . . . . .  C  ADDR  0242H  NOT USED
-WAIT_OUTER . . . . . . . . . . . . .  C  ADDR  0244H
 WDTCON . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTPRG . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTRST . . . . . . . . . . . . . . .  D  ADDR  00A6H  NOT USED

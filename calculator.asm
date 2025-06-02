@@ -54,25 +54,25 @@ op_equal:
 op_add:
 	MOV	A,	truth
 	ADD	A,	R0
-	MOV	A,	truth
+	MOV	truth,	A
 	RET
 
 op_minus:
 	MOV	A,	truth
 	SUBB	A,	R0
-	MOV	A,	truth
+	MOV	truth,	A
 	RET
 
 op_multiply:
 	MOV	A,	truth
 	MOV	B,	R0
 	MUL	AB
-	MOV	A,	truth
+	MOV	truth,	A
 	RET
 
 op_divide:
 	MOV	A,	truth
 	MOV	B,	R0
 	DIV	AB
-	MOV	A,	truth
+	MOV	truth,	A
 	RET
